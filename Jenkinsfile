@@ -4,7 +4,7 @@ pipeline {
   environment {
     APP_NAME     = "juice-shop"
     GHCR_REPO    = "ghcr.io/arieldla/juice-shop"
-    GITEA_REPO   = "docker.dlagroup.io/arieldla/juice-shop"
+    GITEA_REPO   = "192.168.0.102:3000/arieldla/juice-shop"
     AWS_REGION       = "us-east-1"
     AWS_DEFAULT_REGION = "us-east-1"
     EB_APP_NAME  = "dla-juiceshop-app"
