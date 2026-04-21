@@ -58,7 +58,7 @@ pipeline {
                           usernameVariable: 'GITEA_USER',
                           passwordVariable: 'GITEA_PASS')]) {
           sh """
-            echo \$GITEA_PASS | docker login docker.dlagroup.io -u \$GITEA_USER --password-stdin
+            echo \$GITEA_PASS | docker login 192.168.0.102:3000 -u \$GITEA_USER --password-stdin
             docker push ${GITEA_REPO}:${IMAGE_TAG}
             docker push ${GITEA_REPO}:latest
           """
