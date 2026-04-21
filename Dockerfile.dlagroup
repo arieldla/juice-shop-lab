@@ -1,0 +1,14 @@
+# DLAGROUP overlay — extends official Juice Shop image
+# Does NOT modify application source
+FROM bkimminich/juice-shop:latest
+
+LABEL org.dlagroup.maintainer="arieldla@dlagroup.io" \
+      org.dlagroup.lab="juice-shop-lab" \
+      org.dlagroup.plan="150-day-devsecops"
+
+# Expose metrics port (app already serves /metrics on 3000)
+EXPOSE 3000
+
+# Healthcheck for Docker and ECS
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:3000 | grep -q "Juice Shop" || exit 1

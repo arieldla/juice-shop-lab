@@ -1,0 +1,53 @@
+<!-- DLAGROUP Juice Shop custom detection rules -->
+<!-- Deploy to: /var/ossec/etc/rules/local_rules.xml on Wazuh CT 121 -->
+
+<!-- SQL injection attempt -->
+<rule id="100010" level="12">
+  <if_group>web|web_appsec</if_group>
+  <url_match>union\+select|union select|1=1|or 1=1|drop table|' or '|%27|0x</url_match>
+  <description>Juice Shop: SQL injection attempt detected</description>
+  <group>juice_shop,sql_injection,attack,pci_dss_6.5.1</group>
+</rule>
+
+<!-- Brute force login (5 POSTs to /rest/user/login in 30s from same IP) -->
+<rule id="100011" level="12" frequency="5" timeframe="30">
+  <if_matched_group>web</if_matched_group>
+  <url_match>/rest/user/login</url_match>
+  <same_source_ip/>
+  <description>Juice Shop: brute force login detected</description>
+  <group>juice_shop,brute_force,authentication_failed,attack</group>
+</rule>
+
+<!-- XSS payload in request -->
+<rule id="100012" level="10">
+  <if_group>web|web_appsec</if_group>
+  <url_match>&lt;script&gt;|javascript:|onerror=|onload=|alert\(|document\.cookie</url_match>
+  <description>Juice Shop: XSS attempt detected</description>
+  <group>juice_shop,xss,attack,pci_dss_6.5.7</group>
+</rule>
+
+<!-- Admin/hidden path enumeration -->
+<rule id="100013" level="8" frequency="10" timeframe="60">
+  <if_matched_group>web</if_matched_group>
+  <url_match>/administration|/b2b|/ftp|/encryptionkeys|/metrics|/api-docs</url_match>
+  <same_source_ip/>
+  <description>Juice Shop: sensitive path enumeration/scanning</description>
+  <group>juice_shop,recon,scan,attack</group>
+</rule>
+
+<!-- JWT alg:none / manipulation attempt -->
+<rule id="100014" level="12">
+  <if_group>web|web_appsec</if_group>
+  <url_match>/rest/user/whoami|/rest/user/change-password</url_match>
+  <match>alg.*none|eyJhbGciOiJub25lIn0</match>
+  <description>Juice Shop: JWT algorithm:none manipulation attempt</description>
+  <group>juice_shop,jwt_attack,authentication_bypass,attack</group>
+</rule>
+
+<!-- Directory traversal / FTP access -->
+<rule id="100015" level="10">
+  <if_group>web</if_group>
+  <url_match>\.\.\/|%2e%2e|/ftp/|\.bak$|\.old$|passwd</url_match>
+  <description>Juice Shop: directory traversal or sensitive file access attempt</description>
+  <group>juice_shop,traversal,attack</group>
+</rule>
