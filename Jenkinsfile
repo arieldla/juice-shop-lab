@@ -77,7 +77,7 @@ pipeline {
         """
         withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
           sh """
-            git push https://arieldla:\$GH_TOKEN@github.com/arieldla/juice-shop-lab.git HEAD:main
+            git push https://arieldla:\$GH_TOKEN@github.com/arieldla/juice-shop-lab.git HEAD:master
           """
         }
       }
