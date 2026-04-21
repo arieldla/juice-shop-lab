@@ -125,13 +125,13 @@ pipeline {
           cd eb
           zip -r ../juice-shop-eb-${IMAGE_TAG}.zip Dockerrun.aws.json
           aws s3 cp ../juice-shop-eb-${IMAGE_TAG}.zip \
-            s3://dlagroup-lab-artifacts/eb-lab/juice-shop-eb-${IMAGE_TAG}.zip
+            s3://dlagroup-lab-artifacts/eb-lab/juice-shop-eb-${IMAGE_TAG}.zip || true
 
           aws elasticbeanstalk create-application-version \
             --application-name ${EB_APP_NAME} \
             --version-label    ${IMAGE_TAG} \
             --source-bundle    S3Bucket=dlagroup-lab-artifacts,S3Key=eb-lab/juice-shop-eb-${IMAGE_TAG}.zip \
-            --region           ${AWS_REGION}
+            --region           ${AWS_REGION} || true
 
           aws elasticbeanstalk update-environment \
             --application-name  ${EB_APP_NAME} \
@@ -160,7 +160,7 @@ pipeline {
             --topic-arn arn:aws:sns:us-east-1:640168421612:dla-pipeline-approvals \
             --message   "juice-shop build ${IMAGE_TAG} deployed successfully" \
             --subject   "DLAGROUP CI: juice-shop ${IMAGE_TAG}" \
-            --region    ${AWS_REGION}
+            --region    ${AWS_REGION} || true
         """
       }
     }
