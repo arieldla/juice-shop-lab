@@ -85,19 +85,25 @@ pipeline {
 
     stage('AWS Auth (IAM Roles Anywhere)') {
       steps {
-        sh '''
-          aws_signing_helper credential-process \
-            --certificate    /opt/jenkins-pki/jenkins.crt \
-            --private-key    /opt/jenkins-pki/jenkins.key \
-            --trust-anchor-arn $(cat /run/secrets/iam-roles-anywhere-trust-anchor-arn) \
-            --profile-arn    $(cat /run/secrets/iam-roles-anywhere-profile-arn) \
-            --role-arn       $(cat /run/secrets/iam-roles-anywhere-role-arn) \
-            > /tmp/aws-creds.json
-          export AWS_ACCESS_KEY_ID=$(jq -r .AccessKeyId     /tmp/aws-creds.json)
-          export AWS_SECRET_ACCESS_KEY=$(jq -r .SecretAccessKey /tmp/aws-creds.json)
-          export AWS_SESSION_TOKEN=$(jq -r .SessionToken     /tmp/aws-creds.json)
-          aws sts get-caller-identity
-        '''
+        withCredentials([
+          string(credentialsId: 'iam-roles-anywhere-trust-anchor-arn', variable: 'TRUST_ANCHOR_ARN'),
+          string(credentialsId: 'iam-roles-anywhere-profile-arn',      variable: 'PROFILE_ARN'),
+          string(credentialsId: 'iam-roles-anywhere-role-arn',         variable: 'ROLE_ARN')
+        ]) {
+          sh '''
+            aws_signing_helper credential-process \
+              --certificate  /opt/jenkins-pki/jenkins.crt \
+              --private-key  /opt/jenkins-pki/jenkins.key \
+              --trust-anchor-arn $TRUST_ANCHOR_ARN \
+              --profile-arn      $PROFILE_ARN \
+              --role-arn         $ROLE_ARN \
+              > /tmp/aws-creds.json
+            export AWS_ACCESS_KEY_ID=$(jq -r .AccessKeyId      /tmp/aws-creds.json)
+            export AWS_SECRET_ACCESS_KEY=$(jq -r .SecretAccessKey /tmp/aws-creds.json)
+            export AWS_SESSION_TOKEN=$(jq -r .SessionToken      /tmp/aws-creds.json)
+            aws sts get-caller-identity
+          '''
+        }
       }
     }
 
