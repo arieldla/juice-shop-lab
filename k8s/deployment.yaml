@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: juice-shop
-          image: ghcr.io/arieldla/juice-shop:65-6de208d
+          image: ghcr.io/arieldla/juice-shop:66-c414477
           ports:
             - name: http
               containerPort: 3000
